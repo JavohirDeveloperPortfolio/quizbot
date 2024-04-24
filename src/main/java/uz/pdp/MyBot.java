@@ -62,17 +62,28 @@ public class MyBot extends TelegramLongPollingBot {
                 } catch (TelegramApiException e) {
                     throw new RuntimeException(e);
                 }
-            }
-            User user = userRepository.selectByChatId(chatId);
-            if (user.getRole() == Role.ADMIN){
-
-            } else if (user.getRole() == Role.STUDENT) {
-
-            } else if (user.getRole() == Role.TEACHER) {
-
             } else {
-
+                User user = userRepository.selectByChatId(chatId);
+                if (user.getState() == BotState.START){
+                    if (text.equals("\uD83C\uDDFA\uD83C\uDDFFUzbek tili")){
+                        userRepository.updateBotState(chatId, BotState.MAIN_PAGE);
+                        userRepository.updateLanguage(chatId, "uz");
+                    } else if (text.equals("\uD83C\uDDF7\uD83C\uDDFARus tili")) {
+                        userRepository.updateBotState(chatId, BotState.MAIN_PAGE);
+                        userRepository.updateLanguage(chatId, "ru");
+                    }
+                }
             }
+
+//            if (user.getRole() == Role.ADMIN){
+//
+//            } else if (user.getRole() == Role.STUDENT) {
+//
+//            } else if (user.getRole() == Role.TEACHER) {
+//
+//            } else {
+//
+//            }
         }
     }
 

@@ -16,6 +16,42 @@ public class UserRepository {
     private final String selectByChatId =
             "SELECT * FROM botusers WHERE chat_id = ?";
 
+    private final String updateBotState =
+            "UPDATE botusers SET state = ? WHERE chat_id = ?";
+
+    private final String updateLanguage =
+            "UPDATE botusers SET lang = ? WHERE chat_id = ?";
+
+    public void updateBotState(long chatId, BotState botState){
+        try {
+            Connection conn = CustomDataSource.getInstance().getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(updateBotState);
+
+            preparedStatement.setString(1,botState.name());
+            preparedStatement.setLong(2,chatId);
+
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateLanguage(long chatId, String lang){
+        try {
+            Connection conn = CustomDataSource.getInstance().getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(updateLanguage);
+
+            preparedStatement.setString(1,lang);
+            preparedStatement.setLong(2,chatId);
+
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void createUser(long chatId, BotState state) {
         try {
             Connection conn = CustomDataSource.getInstance().getConnection();
@@ -31,6 +67,8 @@ public class UserRepository {
         }
     }
 
+
+
     public User selectByChatId(long chatId) {
         User user = new User();
         try (
@@ -42,12 +80,12 @@ public class UserRepository {
             if (!resultSet.next()) {
                 return null;
             }
-            user.setFullName(resultSet.getString("full_name"));
+            user.setFullName(resultSet.getString("lang"));
             user.setState(BotState.valueOf(resultSet.getString("state")));
-            user.setRole(Role.valueOf(resultSet.getString("role")));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return user;
     }
+
 }
